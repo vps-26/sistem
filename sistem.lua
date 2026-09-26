@@ -1,29 +1,243 @@
---[[
-╔══════════════════════════════════════════════════════════════╗
-║                     REDZ LUA PROTECTOR                      ║
-║                     Protected by Redz                       ║
-║              © Redz. All rights reserved.                  ║
-╚══════════════════════════════════════════════════════════════╝
-]]
--- REDZ-LAYER-3
-local _rMErjiTAMb="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-local _rYaIPQxQzQ=function(_rbVClYgbsT)
- local _rVNaiBOUwd={} local _rHzIIqHYsf=0 local _rnMZBwHLKi=0
- for i=1,#_rbVClYgbsT do
-  local _raYoCpqHWX=string.byte(_rbVClYgbsT,i)
-  if _raYoCpqHWX==61 then break end
-  local _rwEERbpAuT=string.find(_rMErjiTAMb,string.char(_raYoCpqHWX),1,true)
-  if _rwEERbpAuT then
-   _rwEERbpAuT=_rwEERbpAuT-1; _rHzIIqHYsf=_rHzIIqHYsf*64+_rwEERbpAuT; _rnMZBwHLKi=_rnMZBwHLKi+6
-   if _rnMZBwHLKi>=8 then
-    _rnMZBwHLKi=_rnMZBwHLKi-8; local z=math.floor(_rHzIIqHYsf/(2^_rnMZBwHLKi))%256
-    _rVNaiBOUwd[#_rVNaiBOUwd+1]=string.char(z)
-   end
-  end
- end
- return table.concat(_rVNaiBOUwd)
+-- [[ Redz Optimizer - Roblox Performance Script ]] --
+-- Author: Redz
+
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local StatsService = game:GetService("Stats")
+local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService("Workspace")
+
+local LocalPlayer = Players.LocalPlayer
+
+-- Mencegah duplicate GUI
+if CoreGui:FindFirstChild("RedzOptimizerGui") then
+    CoreGui.RedzOptimizerGui:Destroy()
 end
-local _rbrVJJjCNk=_rYaIPQxQzQ("LS1bWwrilZTilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZcK4pWRICAgICAgICAgICAgICAgICAgICAgUkVEWiBMVUEgUFJPVEVDVE9SICAgICAgICAgICAgICAgICAgICAgIOKVkQrilZEgICAgICAgICAgICAgICAgICAgICBQcm90ZWN0ZWQgYnkgUmVkeiAgICAgICAgICAgICAgICAgICAgICAg4pWRCuKVkSAgICAgICAgICAgICAgwqkgUmVkei4gQWxsIHJpZ2h0cyByZXNlcnZlZC4gICAgICAgICAgICAgICAgICDilZEK4pWa4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWdCl1dCi0tIFJFRFotTEFZRVItMgpsb2NhbCBfcm9VQldpaU5kSj0iQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVphYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ejAxMjM0NTY3ODkrLyIKbG9jYWwgX3J6QkRyc2FWd289ZnVuY3Rpb24oX3JYcU1EdExDc1gpCiBsb2NhbCBfcnVGdnRwZm5rYT17fSBsb2NhbCBfcmNNeHVhc3VCZz0wIGxvY2FsIF9yRmJmUm1tU0pGPTAKIGZvciBpPTEsI19yWHFNRHRMQ3NYIGRvCiAgbG9jYWwgX3JTZEN6R3B0eVE9c3RyaW5nLmJ5dGUoX3JYcU1EdExDc1gsaSkKICBpZiBfclNkQ3pHcHR5UT09NjEgdGhlbiBicmVhayBlbmQKICBsb2NhbCBfcndWVE5OTHlRTz1zdHJpbmcuZmluZChfcm9VQldpaU5kSixzdHJpbmcuY2hhcihfclNkQ3pHcHR5USksMSx0cnVlKQogIGlmIF9yd1ZUTk5MeVFPIHRoZW4KICAgX3J3VlROTkx5UU89X3J3VlROTkx5UU8tMTsgX3JjTXh1YXN1Qmc9X3JjTXh1YXN1QmcqNjQrX3J3VlROTkx5UU87IF9yRmJmUm1tU0pGPV9yRmJmUm1tU0pGKzYKICAgaWYgX3JGYmZSbW1TSkY+PTggdGhlbgogICAgX3JGYmZSbW1TSkY9X3JGYmZSbW1TSkYtODsgbG9jYWwgej1tYXRoLmZsb29yKF9yY014dWFzdUJnLygyXl9yRmJmUm1tU0pGKSklMjU2CiAgICBfcnVGdnRwZm5rYVsjX3J1RnZ0cGZua2ErMV09c3RyaW5nLmNoYXIoeikKICAgZW5kCiAgZW5kCiBlbmQKIHJldHVybiB0YWJsZS5jb25jYXQoX3J1RnZ0cGZua2EpCmVuZApsb2NhbCBfcnJTaG5HcldIeD1fcnpCRHJzYVZ3bygiTFMxYld3cmlsWlRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWkRpbFpEaWxaRGlsWmNLNHBXUklDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdVa1ZFV2lCTVZVRWdVRkpQVkVWRFZFOVNJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSU9LVmtRcmlsWkVnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNCUWNtOTBaV04wWldRZ1lua2dVbVZrZWlBZ0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNBZ0lDQWc0cFdSQ3VLVmtTQWdJQ0FnSUNBZ0lDQWdJQ0Fnd3FrZ1VtVmtlaTRnUVd4c0lISnBaMmgwY3lCeVpYTmxjblpsWkM0Z0lDQWdJQ0FnSUNBZ0lDQWdJQ0FnSUNEaWxaRUs0cFdhNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdRNHBXUTRwV1E0cFdkQ2wxZENpMHRJRkpGUkZvdFRFRlpSVkl0TVFwc2IyTmhiQ0JmY25KRVRIVjZibTFYVEQwaVFVSkRSRVZHUjBoSlNrdE1UVTVQVUZGU1UxUlZWbGRZV1ZwaFltTmtaV1puYUdscWEyeHRibTl3Y1hKemRIVjJkM2g1ZWpBeE1qTTBOVFkzT0Rrckx5SUtiRzlqWVd3Z1gzSjZXSE5FYUV4emRWWTlablZ1WTNScGIyNG9YM0pLUkVoeFJuQlVRMEVwQ2lCc2IyTmhiQ0JmY2s5T1RrMURkazEzZVQxN2ZTQnNiMk5oYkNCZmNteHNabnBsZW5wclN6MHdJR3h2WTJGc0lGOXlWRTlLU0cxMVFtOWFQVEFLSUdadmNpQnBQVEVzSTE5eVNrUkljVVp3VkVOQklHUnZDaUFnYkc5allXd2dYM0pKVm5wNmNYTmhlVzQ5YzNSeWFXNW5MbUo1ZEdVb1gzSktSRWh4Um5CVVEwRXNhU2tLSUNCcFppQmZja2xXZW5weGMyRjViajA5TmpFZ2RHaGxiaUJpY21WaGF5QmxibVFLSUNCc2IyTmhiQ0JmY214NFZuUnFaV2xuWlQxemRISnBibWN1Wm1sdVpDaGZjbkpFVEhWNmJtMVhUQ3h6ZEhKcGJtY3VZMmhoY2loZmNrbFdlbnB4YzJGNWJpa3NNU3gwY25WbEtRb2dJR2xtSUY5eWJIaFdkR3BsYVdkbElIUm9aVzRLSUNBZ1gzSnNlRlowYW1WcFoyVTlYM0pzZUZaMGFtVnBaMlV0TVRzZ1gzSnNiR1o2WlhwNmEwczlYM0pzYkdaNlpYcDZhMHNxTmpRclgzSnNlRlowYW1WcFoyVTdJRjl5VkU5S1NHMTFRbTlhUFY5eVZFOUtTRzExUW05YUt6WUtJQ0FnYVdZZ1gzSlVUMHBJYlhWQ2IxbytQVGdnZEdobGJnb2dJQ0FnWDNKVVQwcEliWFZDYjFvOVgzSlVUMHBJYlhWQ2Ixb3RPRHNnYkc5allXd2dlajF0WVhSb0xtWnNiMjl5S0Y5eWJHeG1lbVY2ZW10TEx5Z3lYbDl5VkU5S1NHMTFRbTlhS1NrbE1qVTJDaUFnSUNCZmNrOU9UazFEZGsxM2VWc2pYM0pQVGs1TlEzWk5kM2tyTVYwOWMzUnlhVzVuTG1Ob1lYSW9laWtLSUNBZ1pXNWtDaUFnWlc1a0NpQmxibVFLSUhKbGRIVnliaUIwWVdKc1pTNWpiMjVqWVhRb1gzSlBUazVOUTNaTmQza3BDbVZ1WkFwc2IyTmhiQ0JmY21OdGNXRktXRUY1WmoxZmNucFljMFJvVEhOMVZpZ2lWVE5TYkZsWGQzUlpWelIwVWxka2JreFVOVmhoUjBZd1l6QkdkMk5EUW5WaU0xSndXbTFzYkdOcFFsVlpXRXB1V2xoUloyUkhiR3hqYmswMlZUSldhbU50VmpCTU1GWXdXbGhLZFZsWGQzWlNSMnd5WVZjMWJFbEZiRTVWUlRsVFZrVkdUMVpFY0ZWaFIyeDZTVWhPYW1OdGJIZGtRMEpzWlVoQ2JGa3pVbnBKUjBaMVNVZFdORnBYVGpGa1J6bDVTVWRXZFdSdGJIbGlNalYwV2xjMU1FbElVbTlaV0ZGbldsaG9kMkl6VG14amVVSm9ZbWxDU1ZaR1VsRkpTRXBzWTFoV2JHTXpVV2RhYmxaMVdUTlNjR0l5TkhWVFdGRm5Xa2M1YkdONVFrOVVNVkZuV1RJNWRXUkhSbkJpYVVJd1lVZFZaMVl5YUdoa1NFNUNZMGhCWjFrelNteGFSMVoxWkVkc2FHSklUWFZSTWpsMVdtMXNibVJZU214SlJqbDVaRmhvYUZSVldtMVNNVUpMU1VkR2RWcERRbVpqYmxwTFYyMXNjVlZXY0RCa1EwSnBXbGQ0ZG1SNU5XUllWM2gyV1RKR2MwbEdPWGxrV0dob1ZGVmFiVkl4UWt0UVUwcHZaRWhTZDJONmIzWk1NMDR3WkZkU2NGcFhVWFJpV0VKdVRGaFNlV0ZYUm5OamVURnBXVmhPY2xwWVVucE1ibEo1WlZkT2MySXpWbXRhYlhob1kyMVZkVmt5T1hSTU1rWjNZVk01YkZveVkybGlSemxxV1ZkM1oxZ3pTakpUYkhCd1lXeEdZV1JJVVRsSmJrNHdXbGRHYzFsWE5XeGFNbU4wWVRKV05Wa3lhR3haTW5OcFlrYzVhbGxYZDJkWU0wb3haRE53ZWxWVlVtbFhiRlU1VFZSQk0wNTZZelJOUkdOM1RucGpNMDFVV1hsSlIzaDJXVEpHYzBsR09YbGhSMXBJVkVWYWRHSkhWa05RVTJoNlpWYzBaMWxYTld0SlNFNDFZbWsxZVZwWVJqRmFXRTR3UzFjNWVVdEhhREJrU0VGbldWYzFhMGxIYURCa1NFRjFZMjFXZUdSWFZucGtRMngyWTJsQ2IyUklVbmRZTTBwc1kxaFdiR016VVdkaU0wbG5ZMjFXZUdSWFZucGtRMEp3V21sQ2RXSXpVV2RZTTBwdldtdGtUVkp0TVhOYVZVbG5aRWRvYkdKcFFqTlpXRXAxUzBOS1lsSlhaRzVVYlRrd1lWZGFjRnBZU21SSlJXaFZWa1pCWjJOdFZuaGtWMVo2WkVOQ2JXUlhOV3BrUjJ4MlltbENkV0l6VVdkYWJUa3hZbTFSWjJGWE5HZGtSMmh3WTNsQ2JHVkhWbXBrV0ZKMlkyazBhVXRZU214a1NGWjVZbWxDYkdKdFVXZGlSemxxV1ZkM1oxZ3pTblZVUlZJelVqRndNMVl5YXpsYU1rWjBXbFJ3U0ZwWVVsUmFXRW95WVZkT2JFdERTbEZpUjBZMVdsaEtla2xwYkhOaU1rNW9Za05DWm1OdVZrdGtWM2g2VlVoYWNHTjZNVzVaVnpGc1QydGtiR1JHVG14amJscHdXVEpWYjBsc1pIWmpiWFI2WTBkR2FscFRTWEJpUnpscVdWZDNaMWd6U25SYWJscDJWMnQ0VjFsV2F6bFlNMHAxVkVWU00xSXhjRE5XTW10MVdETktkRnB1V25aWGEzaFhXVlpyWjJKSE9XcFpWM2RuV0ROS1lWcElaRkprTUZwSlZraGpPV1V6VG14Wk0wcHNaRVF3YVZVeVZtcGpiVll3U1dsNGJHUkhWbmxpYlVaelVGTktSbVJIVm5saWJVWnpTV2w0YTJGWVduQmliVlU1U1d0U2NHUnRiSFZhVTBvNVlrYzVhbGxYZDJkWU0wcFZVa2RvYTFKWFduRlNTRWs1WlRNeGMySXlUbWhpUTBKdFpGYzFhbVJIYkhaaWFVSm1ZMjVPVTJSc2NFMWhWVnBZVW1sb1ptTnJlREJSYlhCRVlWZEtOR0o1YkhCYWFVSm1ZMnQ0TUZGdGNFUmhWMG8wWW5vd09XSnRiSE5KU0ZKdldsYzBaMk50VmpCa1dFcDFTVWMxY0dKRFFteGliVkZuWWtjNWFsbFhkMmRZTTBwelVraHdSMlJJV25kaVZUZzVaRWM1ZW1SSVNuQmliV052V0ROS1RXUkZTbkZSTW14cFpVYzRjR0ZYV1dkWU0wcHpVa2h3UjJSSVduZGlWVGc1VUZOSmFXUkhhR3hpYVVKNVdsaFNNV050TkdkaWJXeHpTVWRXZFZwRFFubGFXRkl4WTIwMFoxZ3pTbk5TU0hCSFpFaGFkMkpWT0dkYVZ6VnJTVWQ0ZGxreVJuTkpSMW94WW0xT01HRlhPWFZKUmpsNVZsaEdVV1ZIVW1wVlIxcFRTMFk1ZVZSSVVrTmhhMDV3V1c1b2RrdFlTbXhrU0ZaNVltbENlbVJJU25CaWJXTjFXRE5LVm1OV1FqUmFSMDVSV214SmIxZ3pTbnBWYmxwaFZFZHNSMVl3V1c5WU0wcE5aRVZLY1ZFeWJHbGxSemh3WWpOSlowbHBTWEJhVnpWclNVZDRkbGt5Um5OSlIxb3hZbTFPTUdGWE9YVkpSamw1WWxWd1VGbFdRbUZVUlRrMFMwZHNkV016VW1oaWJVNXNURWMxYUdKWFZucExWMXAyWTJsQ1preEhOV2hpVjFWbllWYzBaMkZZUW1oaFdFcDZTMGMxYUdKWFZucExWMUoyU1VkNGRsa3lSbk5KUnpseVRFWTVlVlJJVWtOaGEwNXdXVzVvZGxCWVFtcFpWM2h6UzBkYU1XSnRUakJoVnpsMVMwTnNlVnBZVWpGamJUUm5ZVmMxZW1SSFJuVlpNbFUyVWpKV01GRllVakJqYld4cFpGaFNiRXRITldoaVYxVndXbGMxYTB0WGJHMUpSemx5U1VkR2RWcERRbVpqYTNnd1VXMXdSR0ZYU2pSaU16UTVZbTFzYzBsSVVtOWFWelJuWWtjNWFsbFhkMmRrYWpGbVkyNU9VMlJzY0UxaFZWcFlVbWxvWm1OcmVEQlJiWEJFWVZkS05HSjViSEJhYVVJeVNVaFNiMXBYTkdkamJWWXdaRmhLZFVsSVdXZGFWelZyU1VkV2RWcERRbXhpYlZGblkyMVdNR1JZU25WSlJ6VndZa05DYkdKdFVXZGlSemxxV1ZkM1oxcHVWblZaTTFKd1lqSTBaMWd6U25waVYwb3hVMFprWVZVd1NXOWhWelY2WkVkR2RWa3lWWE5pYlVaMFdsaE5jRnB0T1hsSlJqaHpZbTFHZEZwVFFuQmlhVUp3WTBkR2NHTnVUVzlpYlVaMFdsaE5jRnBIT0dkaVJ6bHFXVmQzWjFnelNqWlVhMFpRV1RCT1ZsSXdNRGxoVnpWNlpFZEdkVmt5VlRaU2JXeDFXa1ZhY0dOdVRqQlJNbWh3WWtkUmIySnRSblJhVTNnd1kyNVdiRXRYYkcxSlJqbDVaV3MxUWxReVRrUldWV1JPU1VoU2IxcFhOR2RpUnpscVdWZDNaMkl5YzNOWU0wcE5aRVZLY1ZFeWJHbGxSemc1WTBkT2FHSkhkMjlhYmxaMVdUTlNjR0l5Tkc5TFYyeHRTVVk1ZVdWck5VSlVNazVFVmxWa1RrOXJiSHBSVTJkcFZUTlNlV0ZYTlc1V2JVWnpaRmRWYVV0WE9YbEpSamw1WldzMVFsUXlUa1JXVldST1QydHNlbEZUWjJsVFZ6VXdWbTFHYzJSWFZXbExWemw1U1VZNWVXVnJOVUpVTWs1RVZsVmtUazlyYkhwUlUyZHBWRzVXZEZsdFZubFdiVVp6WkZkVmFVdFhPWGxKUmpsNVpXczFRbFF5VGtSV1ZXUk9UMnRzZWxGVFoybFJiVGwyWWtaYWFHSklWbXhKYVd3d1lVZFdkVWxJU214a1NGWjVZbWxDWm1OdWNFOVJWVGxxVVRGV1NGUlROVmRaVjNneFdsTkNiR0p0VVdkamJWWXdaRmhLZFVsSE5YQmlRMEpzWW0xUmNHRlhXV2RpTW5ObldWYzFhMGxHT1hsVVNGSkRZV3RPY0ZsdWFIWm1hakYxWVZkM1oyUkhhR3hpYVVKellqSk9hR0pEUWpKUVZqbDVZekZLTWxkcmVIQlNiR1JIUzBZNWVWUklVa05oYTA1d1dXNW9ka3RYYkcxSlNGbG5aRWRvYkdKcFFubGFXRkl4WTIwMFoyUnBRbXhpYlZGbldsYzFhMGxIVm5WYVEwSnNZbTFSWjJOdFZqQmtXRXAxU1VjMWNHSkRRbXhpYlZGbllrYzVhbGxYZDJkYWJsWjFXVE5TY0dJeU5HZFlNMHBXVm1zNWRGWnJaRkZsYlVsdllWYzFlbVJIUm5WWk1sVnpZbTFHZEZwWVRYQmpiVll3WkZoS2RVbEdPWGxpVlhCUVdWWkNZVlJGT1RSTFIyeDFZek5TYUdKdFRteE1SelZvWWxkV2VrdFhPWGxKUmpsNVl6SXhhV1JWYUZoWGJFNURTMGRzZFdNelVtaGliVTVzVEVjMWFHSlhWbnBMVjFaMVdrTkNjMkl5VG1oaVEwSnRaRmMxYW1SSGJIWmlhVUptWTI1d1lWRlZVbWxpTW1SelZubG9jR0p1VGpCWlZ6VnFXbE5zYzJJeVRtaGlRMEptWTJ0c2VGRXdiSEJsV0dSTVkzb3hOMWd6U2xaV2F6bDBWbXRrVVdWdFNXOWhWelY2WkVkR2RWa3lWWE5sZVVwVllWZFdlVWxwZDJsVmJVWjVZVmhTTlVscGQybFNWMlJ1Vmtkc2JHTnBTWE5KYkU1M1dWaGtkVlpIYkd4amFVbHpTV3hTTldOSFZXbG1VMnR6WVZjMWVtUkhSblZaTWxWMVZHMUdkRnBZTVcxaU0wbG5XSGw0Wm1OcmVEQlJiWEJFWVZkS05HSjVRbkJpYVVKd1kwZEdjR051VFc5WU0wcEtZMVZPU21GWWJETlRNMDF3V2tjNFoySkhPV3BaVjNkbllUSldOVkJXT1hsV1dFWlJaVWRTYWxWSFdsTkxSamw1VkVoU1EyRnJUbkJaYm1oMlMxZGFkbU5wUW5WYVYxWnJZa2RWYzFreVJuVmlNalZ3V1RKR2MwbEhiSFZKU0VKb1lWaEtla3RHT1hsWGJWSXpWVmhrUjFOR1VqTkxWMUoyU1Vkc2JVbElUakJqYld4MVduazFiV0ZYTld0TFIzUnNaVk40ZFZwWFZtdGlSMVZ6VFZONE1HTnVWbXhMV0ZKdldsYzBaMk50VmpCa1dFcDFTVWRPYUdKdE9YVmhWMDVvWWtOQ2JHSnRVV2RhVnpWclNVZFdkVnBEUW5sYVdGSXhZMjAwWjJKdGJITkpSMVoxV2tOQ2MySXlUbWhpUTBKdFpGYzFhbVJIYkhaaWFVSm1ZMnQwUTFOdVFsVmFNVkl5WlZOb2NHSnVUakJaVnpWcVdsTjRkVmxYTVd4amVYaDBXVmhvUlZwWVFqQmhRMnh6WWpKT2FHSkRRbVpqYkZJeFltNUdORlpzUms5aWFqRndZbTVPTUZsWE5XcGFVMEp0WWpOSloxaDZNSGhNUnpGb1pVVlNiR05JVW05SlIxSjJTVWRzYlVsSE5YWmtRMEptWTJ4U01XSnVSalJXYkVaUFltbENNR0ZIVm5WSlIwcDVXbGRHY2tsSFZuVmFRMEp6WWpKT2FHSkRRbVpqYTNnd1VXMXdSR0ZYU2pSaWVqRm1ZMnhXVjFReU1WZFNNVUkyV1dsb1ptTnNVakZpYmtZMFZteEdUMkpwZUhWWlZ6RnNZM2xzY0ZwcFFtWmphM2d3VVcxd1JHRlhTalJpZVVJd1lVZFdkVWxJU214a1NGWjVZbWxDWm1OcmVEQlJiWEJFWVZkS05HSjVRbXhpYlZGbldETktWV1JYTlhobFJscFNWRzAwT1ZnelNsVmtWelY0WlVaYVVsUnROSFZWUjBaNVdsYzFNRWxIVm5WYVEwSjVXbGhTTVdOdE5HZGliV3h6U1VkV2RWcERRbk5pTWs1b1lrTkNiV1JYTldwa1IyeDJZbWxDWm1OdWNIbGFTRUkwWkZWR1RWcDVhSEJpYms0d1dWYzFhbHBUYkhOaU1rNW9Za05DWm1OdFdrcFVNV3g2WTI1Q01sUkVNV1pqYm5CaFVWVlNhV0l5WkhOV2VXaHdZbTVPTUZsWE5XcGFVMnh3V21sQ2RXSXpVV2RZTTBwdFUxVTVXbU16U25ka2EzZG5aRWRvYkdKcFFubGFXRkl4WTIwMFoySnRiSE5KUjFaMVdrTkNjMkl5VG1oaVEwSm1ZMnhHZGxOdFNrVmhWVEY2VTBReFptTnNWbGRVTWpGWFVqRkNObGxwYUhCaWJrNHdXVmMxYWxwVGVEZEpiRUpzWkVOSmMwbHNRbXhrUlRWb1lsZFZhVXhEU2taYU1tUlBXVmN4YkVscGQybFNSMng2WTBkNGFHVlZOV2hpVjFWcFRFTktUMWxYTVd4SmJqQndZak5KWjJGWE5YcGtSMFoxV1RKVmRWUnRSblJhVTBKellqSk9hR0pEUW1aamExWk9Xa1Y0UWxKSGNEQlNhakZtWTJ4V1YxUXlNVmRTTVVJMldXbG9jR0p1VGpCWlZ6VnFXbE40TjBsclJubGFWMFZwVEVOS1lXSXlOV3hKYVhkcFZFYzVhbGxZVW5CaU1qUnBURU5LVTFwWFpIQmlNalJwWmxOc2RtTnBRbVpqYTNSRFUyNUNWVm94VWpKbFUyaHdZbTVPTUZsWE5XcGFVM2czU1d0R2VWcFhSV2xNUTBwaFlqSTFiRWxwZDJsVVJ6bHFXVmhTY0dJeU5HbE1RMHBUV2xka2NHSXlOR2xtVTNjd1MxYzVlVWxEU2xaaWJYUjFZak5rZFVsdGVIWlpNa1p6U1VZNWVWSlhXbTFYYTNCeFUyMVNkRkJXT1hsV1ZscFFZbFphU0ZWSWNHbExSMngxWXpOU2FHSnRUbXhNU0hOcFZXMVdhbUl5TVhSYVZ6VnJWVE5DYkZwWFVXbE1RMHBUV2xkT2RtSlhNV3hpYlZKc1drWk9kMXBYVm10SmFYZHBWVzFXYW1JeU1YUmFWelZyU1VaT2QxcFhWbXRKYVhkcFZUTkNiRnBYVVdsTVEwcFlXVmQ0Y2xVelFteGFWMUZwWmxOc2RtTnBRbVpqYTNSRFUyNUNWVm94VWpKbFUyaHdZbTVPTUZsWE5XcGFVM2czU1d4S2JGa3lPWFJpVjFaMVdrWk9kMXBYVm10SmFYZHBWVzFXYW1JeU1YUmFWelZyV2xkU1ZHTkhWbXhhUTBselNXeE9kMXBYVm10SmJqQnpUWGxzZG1OcFFXbFdWelZ5WW0wNU0ySnBTbmxhV0ZJeFkyMDFOMWd6U20xVFZUbGFZek5LZDJScmR6bFlNMHB0VTFVNVdtTXpTbmRrYTNkeldETktVbUl3Y0dsU1IyeE9ZekJuT1ZnelNsSmlNSEJwVWtkc1RtTXdaM05ZTTBwR1ZGZFNUVkZWVW5Ga1JWazVXRE5LUmxSWFVrMVJWVkp4WkVWWmMyTXpVbWhrU0ZaNlVGTktWRlZGUmxoVWExWkZTVk5KYzJOdFZtcGlNakYwV2xjMWExVXpRbXhhVjFFNVdETktSbHB0V21GVGJYQkxXa2N4T1ZwWE5XdEpSM2gyV1RKR2MwbEhXakZpYlU0d1lWYzVkVWxHT1hsVlYwNTBXa2RHVDFvemNHRkxSamw1WWtWU05sSnVVakpqUnpGUVMxWTVlV0pGVWpaU2JsSXlZMGN4VUZCWVVuWmpNMUo1WVZjMWJrdEdPWGxpUlZJMlVtNVNNbU5ITVZCSlJ6bDVTVU5KYVV0V09YbGlSVkkyVW01U01tTkhNVkJRVmpsNVlrVlNObEp1VWpKalJ6RlFUMjFrZW1SWFNXOUpiSGhqU1dsM2FWaEdlR05ZUTBsd1dETktjMUpJY0Vka1NGcDNZbFU0T1ZnelNuTlNTSEJIWkVoYWQySlZPRFphTTA0eFdXbG5ia2xwWTNOS01YaGpTV2xqY0ZnelNuTlNTSEJIWkVoYWQySlZPRGxZTTBwelVraHdSMlJJV25kaVZUZzJXak5PTVZscFoybFlSelJwVEVOS1kxaEhOR2xMVmpsNVlrVlNObEp1VWpKalJ6RlFVRlk1ZVdKRlVqWlNibEl5WTBjeFVFOXRaSHBrVjBsdlNXeDRlVWxwZDJsWVJuaDVTV2xzZVZwWVVqRmpiVFJuV0ROS2MxSkljRWRrU0ZwM1lsVTRaMXBYTld0SlIzaDJXVEpHYzBsSFdqRmliVTR3WVZjNWRVbEdPWGxhUlRWTFUxVnNOVmRXUm1oTFJqbDVVakphU1ZZd1pFTlZhelZNUzFoS2JHUklWbmxpYVVKNlpFaEtjR0p0WTNWYWJUbDVZbGRHTUV0RFpEZEpibEp3V2xoSmFVOXBTV3hqZVVselNXNUNiR1JEU1RaSmFWWjZTV2wzYVZsWVNteFpVMGsyU1dsV2VrbHBkMmxqTTFKb1pFaFdla2xxYjJsS1dFMXBURU5LZVZwWFRuWmlWekZzWW0xU1ZHTkhWbXhhUTBrMlNXbFdla2xwZDJsak1qa3hZMjFPYkVscWIybFZiVGxwWWtjNU5FbHVNRzVNUmpsNVZWZE9kRnBIUms5YU0zQmhTMFk1ZVZJeVdrbFdNR1JEVldzMVRFeHNPWGxhYTJ4UVYxaE9lV05JV2sxTFUzaG1ZMnhHYW1KWFVtaFViV1EyVjJsb1ptTnJaRzFUUm1SSVVXeEtUMU41TldaamJFWjJVMjFLUldGVk1YcFRRMnR6V0ROS1Vsa3lNV3RaVlRWdVpXeHZiMWd6U2toYWEyaFlVakJLVTFScmMzVllNMHBHVkZkU1RWRlZVbkZrUlZsd1RFWTVlVlZYVG5SYVIwWlBXak53WVV0R09YbFNNbHBKVmpCa1ExVnJOVXhNYms0d1dWaFNNV041YTNOWU0wcFNXVEl4YTFsVk5XNWxiRzl2V0ROS1NGcHJhRmhTTUVwVFZHdHpkV050Vm1waU1qRjBXbGMxYTFVelFteGFWMUZ3UzFkV2RWcERRbk5pTWs1b1lrTkNiV1JYTldwa1IyeDJZbWxDWm1OclVqTldNVlpYVlZod1IxSkRhR1pqYTJSdFUwWmtTRkZzU2s5VGVXeHpZakpPYUdKRFFtWmpia3BPVVZoQ1JsVXlTbEZWYWpGbVkyMVNUMU5yYkVwbFZteFNXVk5vWm1OclpHMVRSbVJJVVd4S1QxTjViSE5pTWs1b1lrTkNkbUY1ZUhsYVdFNTNZakkxZWxwVU1YZFpNa1p6WWtOb2JXUlhOV3BrUjJ4MlltbG5jR050VmpCa1dFcDFTVVk1ZVdGSFdraFVSVnAwWWtkV1EwdElkRlpqYlhjNVdETktNV1ZIUms1U2JWcElWVVZ2YzFSWFZqQmhSemxyVUZOS1VWUXhUbFZKYVhoSldsZEdhMXBZU25wUVdIUmlTV3RPZG1KdVVteGlibEYwVmtoc2QxcFRTbVJRVTBwb1kwaENjMkZYVG1oa1IyeDJZbWs1Y1dNeU9YVkphWGhpU1d0R01XUkhhSFpqYld3MldWaFNjR0l5TkdsWVZEQnBVVzFXYUdOdFZubEpRMGwxVEd3NWVXUnJjR0ZoVjNCU1YyNVNNR1pUZUVOaU1sSTFVRlk1ZVdOck1VSmpSVlpVV1d4Q1UyWlRiR3hpYlZGd1lWZFpaMkp0T1RCSlJ6bHlTVWhTYjFwWE5HZGtNa1o1WW1sbmFWY3dWbTVhTURWMlpFZHNiV0ZYVm5sWVUwSkpWa1pTVVVsSFZubGpiVGw1VDJsSmMyTnRWbnBqUnpsMVl6SlZjR050VmpCa1dFcDFTVWRhYUdKSVRteEpSMVoxV2tOQ2MySXlUbWhpUTBKbVkyNUdkVlpIT1hSVWJYQkZWRVF4TUdJeU5URmlWMHBzWTJsb2VWcFlUbmRpTWpWNldsTTFWR1JIUmpCa1dFNUVZakpTYkVsSE9YbEpTRXBzWXpOQ2RtSnVUbXhNYkU0d1dWaFNNV041UW5aamFVRjNTMWM1ZVVsRVFXZGhWMWxuV0ROS2VHSnNVblppVlRWeFVrVjNLMUJVU1hkTlEwSm9ZbTFSWjFnelNuaGliRkoyWWxVMWNWSkZkemhOZWtGM1NVaFNiMXBYTkdkalNFcHdZbTVSYjBsc2RFWmFNbVJQWWpOU2NGcHRiR3hqYkRCblZUSldkV1JFYjJsTVJqbDVVakphU1ZZd1pFTlZhelZNVEd3NWVWcHJiRkJYV0U1NVkwaGFUVXhHT1hsU01scEpWakJrUTFWck5VeE1iRGw1VlZjNVMxbHJVbkJVV0U1SlRFWTVlVkl5V2tsV01HUkRWV3MxVEV4c09YbFNWVEZyVkVWR1JXRnVVa2RMV0Vwc1pFaFdlV0pwUWpCamJsWnNTVWRXZFZwRFFqTlpXRXAxUzBOS1lsSlhaRzVVYlRrd1lWZGFjRnBZU21SSlJVWlJVMU5DZVZwWVVqRmpiVFZzV2tSdmFVeEdPWGxqVnpWVllqSXhUMkZyVWsxTVNFcHNZek5DZG1KdVRteE1hMHAyV2tocloySXpTV2RKYVVsd1kyMVdNR1JZU25WSlIxcG9Za2hPYkVsSFZuVmFRMEp6WWpKT2FHSkRRbTFrVnpWcVpFZHNkbUpwUW1aamJscFhZakpXUm1JeU5YbFRhV2h3WW01T01GbFhOV3BhVTNobVkydGtiVk5HWkVoUmJFcFBVM2xzYzJJeVRtaGlRMEoyWVhsNGJXUlhlSE5VYlVaMFdsUXhkMWt5Um5OaVEyaHRaRmMxYW1SSGJIWmlhV2R3WTIxV01HUllTblZKUjJ4MVl6TlNhR0p0VG14UGEyUnNaRVZhTVdKSGVFOVpWekZzUzBOc2JHSnRVWEJoVjFsblltMDVNRWxIT1hKSlNGSnZXbGMwWjFwdVZuTmlSVFZvWWxkVk9XRlhOWHBrUjBaMVdUSlZkVlJ0Um5SYVUwSnNZbTFSWjJOdFZqQmtXRXAxU1VoU2FGbHRlR3hNYlU1MlltMU9hR1JEYURkWU0wcElXbXRvV0ZJd1NsTlVhM04xV0ROS2JWTlZPVnBqTTBwM1pHdDNjMWd6U2toYWEyaFlVakJLVTFScmMzVllNMHBTWWpCd2FWSkhiRTVqTUdkeldETktTRnByYUZoU01FcFRWR3R6ZFZnelNrWlVWMUpOVVZWU2NXUkZXWE5hYmxaellrVTFhR0pYVmpsTVEwbzRTV2xzYkdKdFVXZGlSemxxV1ZkM1oxcHVWblZaTTFKd1lqSTBaMWd6U2sxaFJXaHJaVWRhZFdGR1ZXOWhWelY2WkVkR2RWa3lWWEJoVjFsblltMDVNRWxIYkhWak0xSm9ZbTFPYkVsSE9YbEpSelYyWkVOQ2NHSnVUakJaVnpWcVdsUndTbU13VW14ak1rNXNZbTFTYUdKdVVsQmFhV2h1V1ZjeGJFdFlVbTlhVnpSblkyMVdNR1JZU25WSlIxWjFXa05DYzJJeVRtaGlRMEptWTJ0a2JWTkdaRWhSYkVwUFUzb3habU51Y0hsYVNFSTBaRlZHVFZwNWFIQmliazR3V1ZjMWFscFRiSEJhYVVKMVlqTlJaMWd6U2toYWEyaFlVakJLVTFScmMyZGtSMmhzWW1sQ2VWcFlVakZqYlRSbldsYzFhMGxIZUhaWk1rWnpTVWQwYkdWVU1XWmpibHBYWWpKV1JtSXlOWGxUYVdod1ltNU9NRmxYTldwYVUzaG1ZMnRrYlZOR1pFaFJiRXBQVTNsc2NGcHBRbVpqYkZKRllVZFNSbHB0Y0VWamJIUnlXbGhzWkdSSGFHeGlhVUo1V2xoU01XTnROR2RhVnpWclNVWTVlVlpGVW05YVJWWnRZV3RTZVZjeWRHeGxWakE1WkVoS01WcFRRakJaV0U1eVRHNU9kMWxZWkhWTFIxb3hZbTFPTUdGWE9YVkxRMnhtWTJ0U00xWXhWbGRWV0hCSFVrTm9abU5yWkcxVFJtUklVV3hLVDFONWJHeGliVkZ3V2xjMWEwbEhXblpqYVVKbVRFZHNkV016VW1oaWJVNXNTVWRzZFVsSGJIZFpWMng1WTNsb1ptTnVWa3RrVjNoNlZVaGFjR042Y0VoYVdGSkZXbGhPYWxwWE5XdFpWelV3WTNsbmNFdFhVblpKUmpsNVZFZG9TVnBJYUcxaWJXaFdTMGRzZFdNelVtaGliVTVzUzFkV2RWcERRbVpqYmxaTFpGZDRlbFZJV25CamVUVkZXbGhPYWxwWE5XdFpWelV3VVZkU2ExcFhVVFpSTWpsMVltMVdhbVJEYUcxa1Z6VnFaRWRzZG1KcGFIQmliazR3V1ZjMWFscFRiREJaV0U1eVRHMVNiRnB0Vm5sTFJqbDVWRWRvU1ZwSWFHMWliV2hXVEVkc2RXTXpVbWhpYlU1c1MxaFNhR015YzNWYVIxWnpXVmhyYjAxRE5ERk1SMW94WW0xT01HRlhPWFZMUTJ4bVkydDRiMU5IVWpSYWJUVnZWbE5vY0dKdVRqQlpWelZxV2xOc2JHSnRVWEJrUjBaNllYazFhMXBYZUdobFUyZDRUR3BWYzFwdVZuVlpNMUp3WWpJMGIwdFdPWGxVUjJoSldraG9iV0p0YUZaTFIyeDFZek5TYUdKdFRteExWMVoxV2tOc2JHSnRVWEJqU0Vwd1ltNVJiMGxzZEVaYU1tUlBZak5TY0ZwdGJHeGpiREJuVlc1V2RXSnRiSFZhZVRScFMxaENlV0ZYTlRCTFEwcGlVbGRrYmxSdE9UQmhWMXB3V2xoS1pFbEdaR2hrUjA1dllWYzFia2xHVG14Wk0wcHNaRU5CZGtsRlZqQmFXRXAxV1ZkM1oweDVRa1ZoV0Zwd1ltMVZkVWxwYTBzaUtRcHNiMk5oYkNCZmNsZFhWMk41YzB0c2VEMXNiMkZrYzNSeWFXNW5JRzl5SUd4dllXUUtZWE56WlhKMEtGOXlWMWRYWTNselMyeDRMQ0pTUlVSYU9pQnNiMkZrYzNSeWFXNW5MMnh2WVdRZ2FYTWdkVzVoZG1GcGJHRmliR1VnYVc0Z2RHaHBjeUJsYm5acGNtOXViV1Z1ZENJcENuSmxkSFZ5YmlCZmNsZFhWMk41YzB0c2VDaGZjbU50Y1dGS1dFRjVaaWtvS1FvPSIpCmxvY2FsIF9yT1lpemdqUUlPPWxvYWRzdHJpbmcgb3IgbG9hZAphc3NlcnQoX3JPWWl6Z2pRSU8sIlJFRFo6IGxvYWRzdHJpbmcvbG9hZCBpcyB1bmF2YWlsYWJsZSBpbiB0aGlzIGVudmlyb25tZW50IikKcmV0dXJuIF9yT1lpemdqUUlPKF9yclNobkdyV0h4KSgpCg==")
-local _rHiQOUEBlI=loadstring or load
-assert(_rHiQOUEBlI,"REDZ: loadstring/load is unavailable in this environment")
-return _rHiQOUEBlI(_rbrVJJjCNk)()
+
+-- Inisialisasi ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "RedzOptimizerGui"
+ScreenGui.ResetOnSpawn = false
+
+pcall(function()
+    ScreenGui.Parent = CoreGui
+end)
+if not ScreenGui.Parent then
+    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+end
+
+-- Frame Utama Panel
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 320, 0, 260)
+MainFrame.Position = UDim2.new(0.5, -160, 0.4, -130)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local MainUICorner = Instance.new("UICorner")
+MainUICorner.CornerRadius = UDim.new(0, 8)
+MainUICorner.Parent = MainFrame
+
+-- Title Bar
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Size = UDim2.new(1, 0, 0, 35)
+TitleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 8)
+TitleCorner.Parent = TitleBar
+
+local TitleText = Instance.new("TextLabel")
+TitleText.Size = UDim2.new(1, -70, 1, 0)
+TitleText.Position = UDim2.new(0, 10, 0, 0)
+TitleText.BackgroundTransparency = 1
+TitleText.Text = "⚡ Redz Optimizer | v1.0"
+TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleText.TextSize = 14
+TitleText.Font = Enum.Font.SourceSansBold
+TitleText.TextXAlignment = Enum.TextXAlignment.Left
+TitleText.Parent = TitleBar
+
+-- Tombol Minimize (-)
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 25, 0, 25)
+MinimizeBtn.Position = UDim2.new(1, -60, 0, 5)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
+MinimizeBtn.Text = "-"
+MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeBtn.TextSize = 16
+MinimizeBtn.Font = Enum.Font.SourceSansBold
+MinimizeBtn.Parent = TitleBar
+
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 4)
+MinCorner.Parent = MinimizeBtn
+
+-- Tombol Close (X)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 25, 0, 25)
+CloseBtn.Position = UDim2.new(1, -30, 0, 5)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 14
+CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.Parent = TitleBar
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 4)
+CloseCorner.Parent = CloseBtn
+
+-- Content Frame (Isi Fitur)
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Size = UDim2.new(1, -20, 1, -45)
+ContentFrame.Position = UDim2.new(0, 10, 0, 40)
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Parent = MainFrame
+
+-- Indicator Status FPS & Ping
+local StatsLabel = Instance.new("TextLabel")
+StatsLabel.Size = UDim2.new(1, 0, 0, 25)
+StatsLabel.Position = UDim2.new(0, 0, 0, 0)
+StatsLabel.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+StatsLabel.Text = "FPS: 0 | Ping: 0 ms"
+StatsLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+StatsLabel.TextSize = 13
+StatsLabel.Font = Enum.Font.Code
+StatsLabel.Parent = ContentFrame
+
+local StatsCorner = Instance.new("UICorner")
+StatsCorner.CornerRadius = UDim.new(0, 4)
+StatsCorner.Parent = StatsLabel
+
+-- Fungsi Pembuat Tombol Toggle
+local function createToggle(name, posY, defaultState, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.Position = UDim2.new(0, 0, 0, posY)
+    btn.Font = Enum.Font.SourceSansSemibold
+    btn.TextSize = 13
+    btn.Parent = ContentFrame
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 5)
+    corner.Parent = btn
+    
+    local state = defaultState
+    local function updateUI()
+        if state then
+            btn.BackgroundColor3 = Color3.fromRGB(45, 120, 65)
+            btn.Text = name .. ": [ ON ]"
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        else
+            btn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+            btn.Text = name .. ": [ OFF ]"
+            btn.TextColor3 = Color3.fromRGB(180, 180, 180)
+        end
+    end
+    
+    btn.MouseButton1Click:Connect(function()
+        state = not state
+        updateUI()
+        callback(state)
+    end)
+    
+    updateUI()
+    return btn
+end
+
+-- Daftar Fitur Optimasi
+local statsEnabled = true
+createToggle("Tampilkan FPS & Ping", 35, true, function(val)
+    statsEnabled = val
+    StatsLabel.Visible = val
+end)
+
+createToggle("Matikan Bayangan (Shadows)", 72, false, function(val)
+    Lighting.GlobalShadows = not val
+end)
+
+createToggle("Optimalkan Textures / Material", 109, false, function(val)
+    if val then
+        for _, v in pairs(Workspace:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.Material = Enum.Material.SmoothPlastic
+            elseif v:IsA("Decal") or v:IsA("Texture") then
+                v.Transparency = 1
+            end
+        end
+    end
+end)
+
+createToggle("Hapus Efek Partikel & Fog", 146, false, function(val)
+    if val then
+        Lighting.FogEnd = 9e9
+        for _, v in pairs(Workspace:GetDescendants()) do
+            if v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
+                v.Enabled = false
+            end
+        end
+    end
+end)
+
+-- Watermark Author
+local AuthorLabel = Instance.new("TextLabel")
+AuthorLabel.Size = UDim2.new(1, 0, 0, 20)
+AuthorLabel.Position = UDim2.new(0, 0, 1, -20)
+AuthorLabel.BackgroundTransparency = 1
+AuthorLabel.Text = "Author: Redz | Optimized Performance"
+AuthorLabel.TextColor3 = Color3.fromRGB(120, 120, 140)
+AuthorLabel.TextSize = 11
+AuthorLabel.Font = Enum.Font.SourceSansItalic
+AuthorLabel.Parent = ContentFrame
+
+-- Logika Minimize & Maximize
+local isMinimized = false
+MinimizeBtn.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    ContentFrame.Visible = not isMinimized
+    if isMinimized then
+        MainFrame.Size = UDim2.new(0, 320, 0, 35)
+        MinimizeBtn.Text = "+"
+    else
+        MainFrame.Size = UDim2.new(0, 320, 0, 260)
+        MinimizeBtn.Text = "-"
+    end
+end)
+
+-- Logika Close
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Logika Perhitungan FPS & Ping Realtime
+local frameCount = 0
+local lastTime = os.clock()
+
+RunService.RenderStepped:Connect(function()
+    frameCount = frameCount + 1
+    local currentTime = os.clock()
+    
+    if currentTime - lastTime >= 1 then
+        local fps = frameCount
+        frameCount = 0
+        lastTime = currentTime
+        
+        local ping = 0
+        pcall(function()
+            ping = math.floor(StatsService.Network.ServerStatsItem["Data Ping"]:GetValue())
+        end)
+        
+        if statsEnabled then
+            StatsLabel.Text = string.format("FPS: %d | Ping: %d ms", fps, ping)
+        end
+    end
+end)
