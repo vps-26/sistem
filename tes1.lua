@@ -1,20 +1,32 @@
 -- Nama   : RedzHub
 -- Versi  : 1.3
 -- Author : Redz
+-- Theme  : Black, White & Neon Blue (Kompatibel Roblox & Delta Exec)
 
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Bersihkan UI lama jika dijalankan ulang
-if CoreGui:FindFirstChild("RedzHub_UI") then
-    CoreGui.RedzHub_UI:Destroy()
+if CoreGui:FindFirstChild("RedzHub_SAE") then
+    CoreGui.RedzHub_SAE:Destroy()
 end
 
 -- ==========================================
--- VARIABEL & DATA
+-- PALET WARNA (HITAM, PUTIH, BIRU)
+-- ==========================================
+local C_DARK = Color3.fromRGB(15, 15, 20)      -- Hitam Utama
+local C_TOPBAR = Color3.fromRGB(22, 24, 32)    -- Hitam Agak Terang
+local C_CARD = Color3.fromRGB(28, 30, 40)      -- Frame Konten
+local C_BLUE = Color3.fromRGB(0, 162, 255)     -- Biru Neon Accent
+local C_WHITE = Color3.fromRGB(255, 255, 255)  -- Putih Teks/Border
+local C_GRAY = Color3.fromRGB(150, 150, 160)   -- Abu-abu Teks Inaktif
+
+-- ==========================================
+-- VARIABEL SISTEM
 -- ==========================================
 local SelectedLocations = {}
 local SelectedRarities = {}
@@ -26,119 +38,159 @@ local AntiRagdollEnabled = false
 local Rarities = {"Common", "Uncommon", "Rare", "Epik", "Legendary", "Mythic", "Cosmic", "Secret", "Eternal", "Divine"}
 local Locations = {"Lake", "Gurun", "Jungle", "Snow", "Volcano", "Abyss Ocean", "Prehistoric", "Cosmic", "Cherry Blossom", "Titan Temple", "Angel & Demons"}
 
-local Connections = {} -- Untuk menyimpan loop agar bisa dimatikan saat close
+local ActiveConnections = {}
 
 -- ==========================================
--- PEMBUATAN UI (MODERN BLACK & WHITE)
+-- PEMBUATAN UI UTAMA
 -- ==========================================
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "RedzHub_UI"
+ScreenGui.Name = "RedzHub_SAE"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.Parent = CoreGui
 
--- BINGKAI UTAMA
+-- FRAME UTAMA
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 450, 0, 320)
-MainFrame.Position = UDim2.new(0.5, -225, 0.5, -160)
-MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 460, 0, 330)
+MainFrame.Position = UDim2.new(0.5, -230, 0.5, -165)
+MainFrame.BackgroundColor3 = C_DARK
 MainFrame.BorderSizePixel = 2
-MainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+MainFrame.BorderColor3 = C_BLUE
+MainFrame.Active = true
 MainFrame.Parent = ScreenGui
 
--- TOPBAR (Untuk Drag)
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 8)
+MainCorner.Parent = MainFrame
+
+-- TOPBAR (HEADER)
 local TopBar = Instance.new("Frame")
-TopBar.Size = UDim2.new(1, 0, 0, 30)
-TopBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+TopBar.Size = UDim2.new(1, 0, 0, 35)
+TopBar.BackgroundColor3 = C_TOPBAR
 TopBar.BorderSizePixel = 0
 TopBar.Parent = MainFrame
 
+local TopCorner = Instance.new("UICorner")
+TopCorner.CornerRadius = UDim.new(0, 8)
+TopCorner.Parent = TopBar
+
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -70, 1, 0)
-Title.Position = UDim2.new(0, 10, 0, 0)
+Title.Size = UDim2.new(1, -80, 1, 0)
+Title.Position = UDim2.new(0, 12, 0, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "RedzHub v1.3 | Steal An Egg"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextColor3 = C_BLUE
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 14
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TopBar
 
--- TOMBOL MINIMIZE & CLOSE
+-- TOMBOL MINIMIZE & CLOSE TOPBAR
 local MinBtn = Instance.new("TextButton")
 MinBtn.Size = UDim2.new(0, 30, 0, 30)
-MinBtn.Position = UDim2.new(1, -60, 0, 0)
+MinBtn.Position = UDim2.new(1, -65, 0, 2)
 MinBtn.BackgroundTransparency = 1
 MinBtn.Text = "-"
-MinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinBtn.TextColor3 = C_WHITE
 MinBtn.Font = Enum.Font.GothamBold
-MinBtn.TextSize = 18
+MinBtn.TextSize = 20
 MinBtn.Parent = TopBar
 
 local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-CloseBtn.Position = UDim2.new(1, -30, 0, 0)
+CloseBtn.Position = UDim2.new(1, -32, 0, 2)
 CloseBtn.BackgroundTransparency = 1
 CloseBtn.Text = "X"
-CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextColor3 = Color3.fromRGB(255, 70, 70)
 CloseBtn.Font = Enum.Font.GothamBold
 CloseBtn.TextSize = 16
 CloseBtn.Parent = TopBar
 
--- TOMBOL RH (MINIMIZE BULAT)
+-- TOMBOL MINIMIZE BULAT (RH)
 local RHButton = Instance.new("TextButton")
+RHButton.Name = "RH_Button"
 RHButton.Size = UDim2.new(0, 50, 0, 50)
-RHButton.Position = UDim2.new(0.5, -25, 0, 20)
-RHButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-RHButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+RHButton.Position = UDim2.new(0.05, 0, 0.2, 0)
+RHButton.BackgroundColor3 = C_DARK
+RHButton.BorderColor3 = C_BLUE
 RHButton.BorderSizePixel = 2
 RHButton.Text = "RH"
-RHButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RHButton.TextColor3 = C_BLUE
 RHButton.Font = Enum.Font.GothamBold
-RHButton.TextSize = 20
+RHButton.TextSize = 18
 RHButton.Visible = false
+RHButton.Active = true
+RHButton.ZIndex = 100
 RHButton.Parent = ScreenGui
+
 local RHCorner = Instance.new("UICorner")
 RHCorner.CornerRadius = UDim.new(1, 0)
 RHCorner.Parent = RHButton
 
--- PANEL CLOSE (CONFIRMATION)
+-- PANEL CONFIRMATION (READY TO CLOSE)
 local ConfirmFrame = Instance.new("Frame")
-ConfirmFrame.Size = UDim2.new(0, 250, 0, 120)
-ConfirmFrame.Position = UDim2.new(0.5, -125, 0.5, -60)
-ConfirmFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-ConfirmFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+ConfirmFrame.Name = "ConfirmFrame"
+ConfirmFrame.Size = UDim2.new(0, 260, 0, 130)
+ConfirmFrame.Position = UDim2.new(0.5, -130, 0.5, -65)
+ConfirmFrame.BackgroundColor3 = C_TOPBAR
+ConfirmFrame.BorderColor3 = C_BLUE
 ConfirmFrame.BorderSizePixel = 2
 ConfirmFrame.Visible = false
+ConfirmFrame.Active = true
+ConfirmFrame.ZIndex = 200
 ConfirmFrame.Parent = ScreenGui
+
+local ConfirmCorner = Instance.new("UICorner")
+ConfirmCorner.CornerRadius = UDim.new(0, 8)
+ConfirmCorner.Parent = ConfirmFrame
 
 local ConfirmText = Instance.new("TextLabel")
 ConfirmText.Size = UDim2.new(1, 0, 0, 50)
+ConfirmText.Position = UDim2.new(0, 0, 0, 10)
 ConfirmText.BackgroundTransparency = 1
 ConfirmText.Text = "Ready to close?"
-ConfirmText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ConfirmText.TextColor3 = C_WHITE
 ConfirmText.Font = Enum.Font.GothamBold
 ConfirmText.TextSize = 16
+ConfirmText.ZIndex = 201
 ConfirmText.Parent = ConfirmFrame
 
 local YesBtn = Instance.new("TextButton")
-YesBtn.Size = UDim2.new(0, 80, 0, 30)
-YesBtn.Position = UDim2.new(0, 30, 0, 60)
-YesBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-YesBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+YesBtn.Size = UDim2.new(0, 90, 0, 35)
+YesBtn.Position = UDim2.new(0, 25, 0, 70)
+YesBtn.BackgroundColor3 = C_BLUE
+YesBtn.TextColor3 = C_WHITE
 YesBtn.Text = "Yes"
 YesBtn.Font = Enum.Font.GothamBold
+YesBtn.TextSize = 14
+YesBtn.ZIndex = 202
 YesBtn.Parent = ConfirmFrame
 
+local YesCorner = Instance.new("UICorner")
+YesCorner.CornerRadius = UDim.new(0, 6)
+YesCorner.Parent = YesBtn
+
 local NoBtn = Instance.new("TextButton")
-NoBtn.Size = UDim2.new(0, 80, 0, 30)
-NoBtn.Position = UDim2.new(1, -110, 0, 60)
-NoBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-NoBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
-NoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+NoBtn.Size = UDim2.new(0, 90, 0, 35)
+NoBtn.Position = UDim2.new(1, -115, 0, 70)
+NoBtn.BackgroundColor3 = C_CARD
+NoBtn.BorderColor3 = C_BLUE
+NoBtn.BorderSizePixel = 1
+NoBtn.TextColor3 = C_WHITE
 NoBtn.Text = "No"
 NoBtn.Font = Enum.Font.GothamBold
+NoBtn.TextSize = 14
+NoBtn.ZIndex = 202
 NoBtn.Parent = ConfirmFrame
 
--- FUNGSI DRAGGABLE
+local NoCorner = Instance.new("UICorner")
+NoCorner.CornerRadius = UDim.new(0, 6)
+NoCorner.Parent = NoBtn
+
+-- ==========================================
+-- DRAGGABLE SYSTEM (SUPPORT TOUCH & MOUSE)
+-- ==========================================
 local function MakeDraggable(dragPart, movePart)
     local dragging, dragInput, dragStart, startPos
     dragPart.InputBegan:Connect(function(input)
@@ -168,7 +220,9 @@ end
 MakeDraggable(TopBar, MainFrame)
 MakeDraggable(RHButton, RHButton)
 
--- LOGIKA TOMBOL UI
+-- ==========================================
+-- LOGIKA TOMBOL UI (CLOSE FIX & MINIMIZE)
+-- ==========================================
 MinBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
     RHButton.Visible = true
@@ -183,53 +237,73 @@ CloseBtn.MouseButton1Click:Connect(function()
     ConfirmFrame.Visible = true
 end)
 
-NoBtn.MouseButton1Click:Connect(function()
-    ConfirmFrame.Visible = false
-end)
+local function CloseScript()
+    AutoStealEnabled = false
+    AntiGuardEnabled = false
+    AntiTrapEnabled = false
+    AntiRagdollEnabled = false
+    
+    for _, conn in pairs(ActiveConnections) do
+        if typeof(conn) == "RBXScriptConnection" then
+            conn:Disconnect()
+        end
+    end
+    
+    if ScreenGui then
+        ScreenGui:Destroy()
+    end
+end
 
-YesBtn.MouseButton1Click:Connect(function()
-    for _, conn in pairs(Connections) do conn:Disconnect() end -- Matikan semua script yg berjalan
-    ScreenGui:Destroy()
-end)
+-- Fix support tombol YES & NO (Event Touch & Click)
+YesBtn.Activated:Connect(CloseScript)
+YesBtn.MouseButton1Click:Connect(CloseScript)
+
+NoBtn.Activated:Connect(function() ConfirmFrame.Visible = false end)
+NoBtn.MouseButton1Click:Connect(function() ConfirmFrame.Visible = false end)
 
 -- ==========================================
--- TABS & KONTEN (MAIN & TOOLS)
+-- TAB NAVIGATION & KONTEN
 -- ==========================================
 local TabContainer = Instance.new("Frame")
-TabContainer.Size = UDim2.new(0, 100, 1, -30)
-TabContainer.Position = UDim2.new(0, 0, 0, 30)
-TabContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+TabContainer.Size = UDim2.new(0, 110, 1, -35)
+TabContainer.Position = UDim2.new(0, 0, 0, 35)
+TabContainer.BackgroundColor3 = C_TOPBAR
 TabContainer.BorderSizePixel = 0
 TabContainer.Parent = MainFrame
 
 local ContentContainer = Instance.new("Frame")
-ContentContainer.Size = UDim2.new(1, -100, 1, -30)
-ContentContainer.Position = UDim2.new(0, 100, 0, 30)
+ContentContainer.Size = UDim2.new(1, -115, 1, -40)
+ContentContainer.Position = UDim2.new(0, 112, 0, 38)
 ContentContainer.BackgroundTransparency = 1
 ContentContainer.Parent = MainFrame
 
 local MainTabBtn = Instance.new("TextButton")
-MainTabBtn.Size = UDim2.new(1, 0, 0, 40)
-MainTabBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-MainTabBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+MainTabBtn.Size = UDim2.new(1, -10, 0, 35)
+MainTabBtn.Position = UDim2.new(0, 5, 0, 10)
+MainTabBtn.BackgroundColor3 = C_BLUE
+MainTabBtn.TextColor3 = C_WHITE
 MainTabBtn.Text = "MAIN"
 MainTabBtn.Font = Enum.Font.GothamBold
+MainTabBtn.TextSize = 13
 MainTabBtn.Parent = TabContainer
+local MTabCorner = Instance.new("UICorner") MTabCorner.CornerRadius = UDim.new(0, 6) MTabCorner.Parent = MainTabBtn
 
 local ToolsTabBtn = Instance.new("TextButton")
-ToolsTabBtn.Size = UDim2.new(1, 0, 0, 40)
-ToolsTabBtn.Position = UDim2.new(0, 0, 0, 45)
-ToolsTabBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-ToolsTabBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
-ToolsTabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToolsTabBtn.Size = UDim2.new(1, -10, 0, 35)
+ToolsTabBtn.Position = UDim2.new(0, 5, 0, 50)
+ToolsTabBtn.BackgroundColor3 = C_CARD
+ToolsTabBtn.TextColor3 = C_WHITE
 ToolsTabBtn.Text = "TOOLS"
 ToolsTabBtn.Font = Enum.Font.GothamBold
+ToolsTabBtn.TextSize = 13
 ToolsTabBtn.Parent = TabContainer
+local TTabCorner = Instance.new("UICorner") TTabCorner.CornerRadius = UDim.new(0, 6) TTabCorner.Parent = ToolsTabBtn
 
 local MainContent = Instance.new("ScrollingFrame")
 MainContent.Size = UDim2.new(1, 0, 1, 0)
 MainContent.BackgroundTransparency = 1
 MainContent.ScrollBarThickness = 4
+MainContent.ScrollBarImageColor3 = C_BLUE
 MainContent.Parent = ContentContainer
 
 local ToolsContent = Instance.new("Frame")
@@ -238,164 +312,177 @@ ToolsContent.BackgroundTransparency = 1
 ToolsContent.Visible = false
 ToolsContent.Parent = ContentContainer
 
--- Logika Pindah Tab
 MainTabBtn.MouseButton1Click:Connect(function()
     MainContent.Visible = true
     ToolsContent.Visible = false
-    MainTabBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    MainTabBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-    ToolsTabBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    ToolsTabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MainTabBtn.BackgroundColor3 = C_BLUE
+    ToolsTabBtn.BackgroundColor3 = C_CARD
 end)
 
 ToolsTabBtn.MouseButton1Click:Connect(function()
     MainContent.Visible = false
     ToolsContent.Visible = true
-    ToolsTabBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    ToolsTabBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
-    MainTabBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    MainTabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ToolsTabBtn.BackgroundColor3 = C_BLUE
+    MainTabBtn.BackgroundColor3 = C_CARD
 end)
 
--- HELPER: Buat Tombol Toggle Standar
+-- HELPER UI BUILDERS
 local function CreateToggle(parent, text, yPos, callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.9, 0, 0, 30)
-    btn.Position = UDim2.new(0.05, 0, 0, yPos)
-    btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-    btn.BorderColor3 = Color3.fromRGB(255, 255, 255)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Text = "[ OFF ] " .. text
+    btn.Size = UDim2.new(0.96, 0, 0, 34)
+    btn.Position = UDim2.new(0.02, 0, 0, yPos)
+    btn.BackgroundColor3 = C_CARD
+    btn.BorderColor3 = C_BLUE
+    btn.BorderSizePixel = 1
+    btn.TextColor3 = C_WHITE
+    btn.Text = "[ OFF ]  " .. text
     btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 12
     btn.Parent = parent
     
+    local bCorner = Instance.new("UICorner") bCorner.CornerRadius = UDim.new(0, 6) bCorner.Parent = btn
+
     local state = false
-    btn.MouseButton1Click:Connect(function()
+    local function toggle()
         state = not state
         if state then
-            btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            btn.TextColor3 = Color3.fromRGB(0, 0, 0)
-            btn.Text = "[ ON ] " .. text
+            btn.BackgroundColor3 = C_BLUE
+            btn.TextColor3 = C_WHITE
+            btn.Text = "[ ON ]  " .. text
         else
-            btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            btn.Text = "[ OFF ] " .. text
+            btn.BackgroundColor3 = C_CARD
+            btn.TextColor3 = C_WHITE
+            btn.Text = "[ OFF ]  " .. text
         end
         callback(state)
-    end)
+    end
+    btn.MouseButton1Click:Connect(toggle)
+    btn.Activated:Connect(toggle)
     return btn
 end
 
--- HELPER: Buat Grid Multi-Select
 local function CreateMultiSelect(parent, title, list, stateTable, yOffset)
     local TitleLbl = Instance.new("TextLabel")
-    TitleLbl.Size = UDim2.new(1, 0, 0, 20)
+    TitleLbl.Size = UDim2.new(1, 0, 0, 18)
     TitleLbl.Position = UDim2.new(0, 0, 0, yOffset)
     TitleLbl.BackgroundTransparency = 1
     TitleLbl.Text = title .. " (Multi-Select)"
-    TitleLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TitleLbl.TextColor3 = C_BLUE
     TitleLbl.Font = Enum.Font.GothamBold
+    TitleLbl.TextSize = 12
+    TitleLbl.TextXAlignment = Enum.TextXAlignment.Left
     TitleLbl.Parent = parent
 
     local GridFrame = Instance.new("Frame")
-    GridFrame.Size = UDim2.new(0.95, 0, 0, math.ceil(#list/3)*35)
-    GridFrame.Position = UDim2.new(0.025, 0, 0, yOffset + 25)
+    GridFrame.Size = UDim2.new(0.98, 0, 0, math.ceil(#list/3)*32)
+    GridFrame.Position = UDim2.new(0, 0, 0, yOffset + 22)
     GridFrame.BackgroundTransparency = 1
     GridFrame.Parent = parent
 
     local Grid = Instance.new("UIGridLayout")
-    Grid.CellSize = UDim2.new(0.3, 0, 0, 30)
-    Grid.CellPadding = UDim2.new(0.03, 0, 0, 5)
+    Grid.CellSize = UDim2.new(0.31, 0, 0, 28)
+    Grid.CellPadding = UDim2.new(0.02, 0, 0, 4)
     Grid.Parent = GridFrame
 
     for _, item in ipairs(list) do
         local btn = Instance.new("TextButton")
-        btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-        btn.BorderColor3 = Color3.fromRGB(255, 255, 255)
-        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.BackgroundColor3 = C_CARD
+        btn.BorderColor3 = C_BLUE
+        btn.BorderSizePixel = 1
+        btn.TextColor3 = C_GRAY
         btn.Text = item
         btn.TextScaled = true
         btn.Font = Enum.Font.Gotham
         btn.Parent = GridFrame
+        
+        local corner = Instance.new("UICorner") corner.CornerRadius = UDim.new(0, 4) corner.Parent = btn
 
         local isSelected = false
-        btn.MouseButton1Click:Connect(function()
+        local function click()
             isSelected = not isSelected
             if isSelected then
-                btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                btn.TextColor3 = Color3.fromRGB(0, 0, 0)
+                btn.BackgroundColor3 = C_BLUE
+                btn.TextColor3 = C_WHITE
                 table.insert(stateTable, item)
             else
-                btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-                btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                btn.BackgroundColor3 = C_CARD
+                btn.TextColor3 = C_GRAY
                 for i, v in ipairs(stateTable) do
                     if v == item then table.remove(stateTable, i) break end
                 end
             end
-        end)
+        end
+        btn.MouseButton1Click:Connect(click)
+        btn.Activated:Connect(click)
     end
-    return yOffset + 25 + math.ceil(#list/3)*35 + 10
+    return yOffset + 22 + math.ceil(#list/3)*32 + 10
 end
 
--- ISI KONTEN MAIN
-local nextY = CreateMultiSelect(MainContent, "Pilih Lokasi", Locations, SelectedLocations, 10)
+-- RENDER ISI TAB
+local nextY = CreateMultiSelect(MainContent, "Pilih Lokasi", Locations, SelectedLocations, 5)
 nextY = CreateMultiSelect(MainContent, "Pilih Rarity", Rarities, SelectedRarities, nextY)
+CreateToggle(MainContent, "Auto Steal (Speed x5)", nextY, function(val) AutoStealEnabled = val end)
+MainContent.CanvasSize = UDim2.new(0, 0, 0, nextY + 50)
 
-local AutoStealBtn = CreateToggle(MainContent, "Auto Steal (Speed x5)", nextY, function(val)
-    AutoStealEnabled = val
-end)
-MainContent.CanvasSize = UDim2.new(0, 0, 0, nextY + 60)
-
--- ISI KONTEN TOOLS
-CreateToggle(ToolsContent, "Anti Hit Guard", 20, function(val) AntiGuardEnabled = val end)
-CreateToggle(ToolsContent, "Anti Trap", 60, function(val) AntiTrapEnabled = val end)
+CreateToggle(ToolsContent, "Anti Hit Guard", 10, function(val) AntiGuardEnabled = val end)
+CreateToggle(ToolsContent, "Anti Trap", 55, function(val) AntiTrapEnabled = val end)
 CreateToggle(ToolsContent, "Anti Ragdoll", 100, function(val) AntiRagdollEnabled = val end)
 
 
 -- ==========================================
--- LOGIKA UTAMA & SISTEM HACK
+-- LOGIKA UTAMA SCRIPT & SYSTEM FIXES
 -- ==========================================
 
--- 1. Loop Auto Steal (Berjalan tiap 0.2 detik agar tidak lag)
-table.insert(Connections, task.spawn(function()
-    while task.wait(0.2) do
+-- 1. FIX SYSTEM: AUTO STEAL 100% OTOMATIS
+table.insert(ActiveConnections, task.spawn(function()
+    while task.wait(0.15) do
         if AutoStealEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = LocalPlayer.Character.HumanoidRootPart
+            local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
             
-            -- Speed 5x Lipat (200)
-            if LocalPlayer.Character:FindFirstChild("Humanoid") then
-                LocalPlayer.Character.Humanoid.WalkSpeed = 200
-            end
+            -- Terapkan Kecepatan Player x5 (Speed 200)
+            if hum then hum.WalkSpeed = 200 end
 
             pcall(function()
-                -- Cari telur di seluruh Workspace
                 for _, obj in pairs(workspace:GetDescendants()) do
-                    -- Jika nama telur cocok dengan salah satu Rarity yg dipilih
-                    if table.find(SelectedRarities, obj.Name) then
-                        
-                        -- Cek apakah telur ini berada di dalam folder Lokasi yg dipilih
-                        local inSelectedLocation = false
+                    -- Cek apakah objek sesuai dengan Rarity yang dipilih
+                    local nameMatch = false
+                    for _, rarity in pairs(SelectedRarities) do
+                        if string.find(obj.Name:lower(), rarity:lower()) then
+                            nameMatch = true
+                            break
+                        end
+                    end
+
+                    if nameMatch then
+                        -- Cek apakah objek berada di dalam Lokasi yang dipilih
+                        local locMatch = false
                         local parent = obj.Parent
                         while parent and parent ~= workspace do
-                            if table.find(SelectedLocations, parent.Name) then
-                                inSelectedLocation = true
-                                break
+                            for _, loc in pairs(SelectedLocations) do
+                                if string.find(parent.Name:lower(), loc:lower()) then
+                                    locMatch = true
+                                    break
+                                end
                             end
+                            if locMatch then break end
                             parent = parent.Parent
                         end
 
-                        if inSelectedLocation then
-                            local targetPart = obj:IsA("Model") and obj.PrimaryPart or (obj:IsA("BasePart") and obj)
-                            if targetPart then
-                                -- Teleport
-                                LocalPlayer.Character.HumanoidRootPart.CFrame = targetPart.CFrame
+                        if locMatch then
+                            local eggPart = obj:IsA("BasePart") and obj or (obj:IsA("Model") and (obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")))
+                            
+                            if eggPart then
+                                -- Teleportasi presisi ke telur
+                                hrp.CFrame = eggPart.CFrame + Vector3.new(0, 1.5, 0)
                                 
-                                -- Bypass ambil telur (Support ProximityPrompt & Touch)
+                                -- Eksekusi Pencurian Telur (Touch & Prompt Bypass)
+                                firetouchinterest(hrp, eggPart, 0)
+                                task.wait(0.02)
+                                firetouchinterest(hrp, eggPart, 1)
+
                                 local prompt = obj:FindFirstChildWhichIsA("ProximityPrompt", true)
                                 if prompt then fireproximityprompt(prompt) end
-                                
-                                firetouchinterest(LocalPlayer.Character.HumanoidRootPart, targetPart, 0)
-                                task.wait(0.05)
-                                firetouchinterest(LocalPlayer.Character.HumanoidRootPart, targetPart, 1)
                             end
                         end
                     end
@@ -405,40 +492,59 @@ table.insert(Connections, task.spawn(function()
     end
 end))
 
--- 2. Loop Penghancur Guard & Trap (100% Anti Hit)
-table.insert(Connections, task.spawn(function()
-    while task.wait(1) do
+-- 2. FIX SYSTEM: ANTI HIT GUARD (Guard Tidak Bisa Meng-Hit)
+table.insert(ActiveConnections, task.spawn(function()
+    while task.wait(0.3) do
         if AntiGuardEnabled then
             pcall(function()
-                for _, v in pairs(workspace:GetDescendants()) do
-                    -- Menghancurkan Guard dari layar kamu, jadi mereka ga bisa mukul
-                    if v:IsA("Model") and (v.Name:lower():match("guard") or v.Name:lower():match("npc") or v.Name:lower():match("security")) then
-                        if v ~= LocalPlayer.Character then v:Destroy() end
+                for _, npc in pairs(workspace:GetDescendants()) do
+                    if npc:IsA("Model") and (string.find(npc.Name:lower(), "guard") or string.find(npc.Name:lower(), "penjaga")) then
+                        if npc ~= LocalPlayer.Character then
+                            -- Matikan fungsi Hitbox/Sentuh pada seluruh bagian tubuh Guard
+                            for _, part in pairs(npc:GetDescendants()) do
+                                if part:IsA("BasePart") then
+                                    part.CanTouch = false
+                                    part.CanCollide = false
+                                end
+                                if part:IsA("TouchTransmitter") then
+                                    part:Destroy() -- Hapus sensor pemukul Guard
+                                end
+                            end
+                            
+                            -- Lumpuhkan pergerakan dan serangan NPC Guard
+                            local gHum = npc:FindFirstChildOfClass("Humanoid")
+                            if gHum then
+                                gHum.WalkSpeed = 0
+                                gHum.JumpPower = 0
+                            end
+                        end
                     end
                 end
             end)
         end
-        
+    end
+end))
+
+-- 3. FIX SYSTEM: ANTI TRAP (Jebakan Tidak Bisa Dipicu)
+table.insert(ActiveConnections, task.spawn(function()
+    while task.wait(0.3) do
         if AntiTrapEnabled then
             pcall(function()
-                for _, v in pairs(workspace:GetDescendants()) do
-                    -- Hapus Trap/Jebakan sebelum kamu menginjaknya
-                    if v:IsA("Model") and (v.Name:lower():match("trap") or v.Name:lower():match("spike")) then
-                        v:Destroy()
-                    end
-                end
-            end)
-        end
-        
-        if AntiRagdollEnabled then
-            pcall(function()
-                -- Mematikan efek pukulan Bat dari Player lain
-                for _, p in pairs(Players:GetPlayers()) do
-                    if p ~= LocalPlayer and p.Character then
-                        for _, tool in pairs(p.Character:GetDescendants()) do
-                            if tool:IsA("Tool") or tool.Name:lower():match("bat") then
-                                for _, part in pairs(tool:GetDescendants()) do
-                                    if part:IsA("TouchTransmitter") then part:Destroy() end
+                for _, item in pairs(workspace:GetDescendants()) do
+                    if item:IsA("Model") or item:IsA("BasePart") then
+                        if string.find(item.Name:lower(), "trap") or string.find(item.Name:lower(), "jebakan") then
+                            -- Matikan kemampuan trap untuk mendeteksi sentuhan pemain
+                            if item:IsA("BasePart") then
+                                item.CanTouch = false
+                                item.CanCollide = false
+                            end
+                            for _, part in pairs(item:GetDescendants()) do
+                                if part:IsA("BasePart") then
+                                    part.CanTouch = false
+                                    part.CanCollide = false
+                                end
+                                if part:IsA("TouchTransmitter") then
+                                    part:Destroy() -- Hapus sensor sentuh trap
                                 end
                             end
                         end
@@ -449,13 +555,29 @@ table.insert(Connections, task.spawn(function()
     end
 end))
 
--- 3. Loop Paksa Berdiri (Anti-Ragdoll)
-table.insert(Connections, RunService.RenderStepped:Connect(function()
-    if AntiRagdollEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        local humanoid = LocalPlayer.Character.Humanoid
-        humanoid.PlatformStand = false
-        if humanoid:GetState() == Enum.HumanoidStateType.Ragdoll or humanoid:GetState() == Enum.HumanoidStateType.FallingDown then
-            humanoid:ChangeState(Enum.HumanoidStateType.Running)
+-- 4. FIX SYSTEM: ANTI RAGDOLL (Bypass Pemukul/Bat & Jatuh)
+table.insert(ActiveConnections, RunService.RenderStepped:Connect(function()
+    if AntiRagdollEnabled and LocalPlayer.Character then
+        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then
+            -- Paksa Player Tetap Berdiri
+            hum.PlatformStand = false
+            hum.Sit = false
+            hum.AutoRotate = true
+
+            local state = hum:GetState()
+            if state == Enum.HumanoidStateType.Ragdoll or state == Enum.HumanoidStateType.FallingDown or state == Enum.HumanoidStateType.Physics then
+                hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+                task.wait()
+                hum:ChangeState(Enum.HumanoidStateType.Running)
+            end
+        end
+
+        -- Hapus Efek Constraint Ragdoll & Stun yang Menempel di Karakter
+        for _, child in pairs(LocalPlayer.Character:GetDescendants()) do
+            if child:IsA("BallSocketConstraint") or child:IsA("NoCollisionConstraint") or (child:IsA("StringValue") and string.find(child.Name:lower(), "ragdoll")) then
+                child:Destroy()
+            end
         end
     end
 end))
